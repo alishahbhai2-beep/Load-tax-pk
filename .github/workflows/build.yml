@@ -21,7 +21,7 @@ jobs:
           flutter create --org com.yourname --project-name loadtaxpk --platforms android .
           cp /tmp/pubspec.yaml pubspec.yaml
           rm -rf test
-          sed -i 's/android:label="[^"]*"/android:label="Load Tax Calculator Pakistan"/' android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="[^"]*"/android:label="Mobile Load Calculator PK"/' android/app/src/main/AndroidManifest.xml
       - run: flutter pub get
       - run: dart run flutter_launcher_icons
       - run: flutter build apk --release
