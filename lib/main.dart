@@ -112,7 +112,7 @@ double? parseAmount(String s) {
 
 // ---------- Calculator ----------
 
-const networks = ['Jazz', 'Zong', 'Ufone', 'Telenor', 'SCO'];
+const networks = ['Jazz', 'Zong', 'Ufone', 'Telenor'];
 const quick = [50, 100, 200, 500, 1000];
 
 class CalcPage extends StatefulWidget {
@@ -142,7 +142,7 @@ class _CalcPageState extends State<CalcPage> {
     FocusScope.of(context).unfocus();
     setState(() {
       _error = null;
-      _res = TaxCalc.forward(v, widget.state.wht, widget.state.gst);
+      _res = TaxCalc.forward(v, widget.state.wht);
     });
   }
 
@@ -199,9 +199,7 @@ class _CalcPageState extends State<CalcPage> {
                   Text(rs(_res!.balance),
                       style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: cs.primary)),
                   const Divider(height: 28),
-                  _row(context, tr(u, 'tax'), rs(_res!.totalTax), bold: true),
-                  _row(context, '${tr(u, 'incomeTax')} (${s.wht}%)', rs(_res!.incomeTax)),
-                  _row(context, '${tr(u, 'salesTax')} (${s.gst}%)', rs(_res!.salesTax)),
+                  _row(context, '${tr(u, 'tax')} (${s.wht}%)', rs(_res!.totalTax), bold: true),
                   _row(context, tr(u, 'load'), rs(_res!.amount)),
                 ]),
               ),
@@ -245,7 +243,7 @@ class _ReversePageState extends State<ReversePage> {
       return;
     }
     FocusScope.of(context).unfocus();
-    setState(() { _error = null; _load = TaxCalc.reverse(v, widget.state.wht, widget.state.gst); });
+    setState(() { _error = null; _load = TaxCalc.reverse(v, widget.state.wht); });
   }
 
   @override
@@ -305,10 +303,9 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late final TextEditingController _w = TextEditingController(text: '${widget.state.wht}');
-  late final TextEditingController _g = TextEditingController(text: '${widget.state.gst}');
 
   @override
-  void dispose() { _w.dispose(); _g.dispose(); super.dispose(); }
+  void dispose() { _w.dispose(); super.dispose(); }
 
   double? _rate(String s) {
     final v = double.tryParse(s.trim());
@@ -330,18 +327,10 @@ class _SettingsPageState extends State<SettingsPage> {
         decoration: dec('wht'),
         onChanged: (t) { final v = _rate(t); if (v != null) s.update(wht: v); },
       ),
-      const SizedBox(height: 12),
-      TextField(
-        controller: _g,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: dec('gst'),
-        onChanged: (t) { final v = _rate(t); if (v != null) s.update(gst: v); },
-      ),
       TextButton(
         onPressed: () {
           s.resetRates();
           _w.text = '${s.wht}';
-          _g.text = '${s.gst}';
         },
         child: Text(tr(u, 'resetRates')),
       ),
