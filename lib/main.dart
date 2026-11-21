@@ -24,7 +24,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) => ListenableBuilder(
         listenable: state,
         builder: (_, __) => MaterialApp(
-          title: 'Load Tax Calculator Pakistan',
+          title: 'Mobile Load Calculator PK',
           debugShowCheckedModeBanner: false,
           themeMode: state.dark ? ThemeMode.dark : ThemeMode.light,
           theme: _theme(Brightness.light),

@@ -1,5 +1,5 @@
 const _en = {
-  'title': 'Load Tax Calculator Pakistan',
+  'title': 'Mobile Load Calculator PK',
   'subtitle': 'Know your real balance after tax',
   'enter': 'Enter load amount (Rs)',
   'calc': 'Calculate Original Balance',
@@ -26,7 +26,7 @@ const _en = {
 };
 
 const _ur = {
-  'title': 'لوڈ ٹیکس کیلکولیٹر پاکستان',
+  'title': 'موبائل لوڈ کیلکولیٹر پاکستان',
   'subtitle': 'ٹیکس کے بعد اپنا اصل بیلنس جانیں',
   'enter': 'لوڈ کی رقم درج کریں (روپے)',
   'calc': 'اصل بیلنس معلوم کریں',
