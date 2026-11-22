@@ -14,7 +14,9 @@ const _en = {
   'reverseTitle': 'Required Load Calculator',
   'reverseHeading': 'Required Load Calculator',
   'headerSub': 'Calculate your mobile balance',
-  'about': 'About',
+  'share': 'Share app',
+  'rate': 'Rate us',
+  'shareText': 'Check out Mobile Load Calculator PK. See your real mobile balance after tax:',
   'wantBalance': 'Balance I want (Rs)',
   'reverseBtn': 'Find load amount',
   'buy': 'You need to load',
@@ -23,8 +25,6 @@ const _en = {
   'lang': 'Urdu language',
   'errEmpty': 'Please enter an amount',
   'errInvalid': 'Enter a valid amount greater than zero',
-  'disclaimer':
-      'Estimates only. Actual deduction may vary by network and current tax rates. Not affiliated with any telecom company.',
 };
 
 const _ur = {
@@ -43,7 +43,9 @@ const _ur = {
   'reverseTitle': 'درکار لوڈ کیلکولیٹر',
   'reverseHeading': 'درکار لوڈ کیلکولیٹر',
   'headerSub': 'اپنا موبائل بیلنس معلوم کریں',
-  'about': 'ایپ کے بارے میں',
+  'share': 'ایپ شیئر کریں',
+  'rate': 'ہمیں ریٹ کریں',
+  'shareText': 'موبائل لوڈ کیلکولیٹر PK دیکھیں۔ ٹیکس کے بعد اپنا اصل موبائل بیلنس جانیں:',
   'wantBalance': 'مطلوبہ بیلنس (روپے)',
   'reverseBtn': 'لوڈ کی رقم معلوم کریں',
   'buy': 'آپ کو اتنا لوڈ کرنا ہوگا',
@@ -52,8 +54,6 @@ const _ur = {
   'lang': 'اردو زبان',
   'errEmpty': 'براہ کرم رقم درج کریں',
   'errInvalid': 'صفر سے زیادہ درست رقم درج کریں',
-  'disclaimer':
-      'یہ صرف اندازہ ہے۔ اصل کٹوتی نیٹ ورک اور موجودہ ٹیکس ریٹ کے مطابق مختلف ہو سکتی ہے۔ کسی ٹیلی کام کمپنی سے وابستہ نہیں۔',
 };
 
 String tr(bool urdu, String key) => (urdu ? _ur : _en)[key] ?? key;

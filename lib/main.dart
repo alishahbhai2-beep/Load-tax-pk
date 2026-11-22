@@ -1,8 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'app_state.dart';
 import 'l10n.dart';
 import 'tax.dart';
+
+const _pkg = 'com.asifawan1120.loadtaxpk';
+const _storeUrl = 'https://play.google.com/store/apps/details?id=$_pkg';
+
+Future<void> shareApp(bool urdu) async {
+  try {
+    await Share.share('${tr(urdu, 'shareText')}\n$_storeUrl');
+  } catch (_) {}
+}
+
+Future<void> rateApp() async {
+  try {
+    final ok = await launchUrl(
+      Uri.parse('market://details?id=$_pkg'),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!ok) {
+      await launchUrl(Uri.parse(_storeUrl), mode: LaunchMode.externalApplication);
+    }
+  } catch (_) {
+    try {
+      await launchUrl(Uri.parse(_storeUrl), mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -103,16 +130,19 @@ class _ShellState extends State<Shell> {
               onChanged: (v) => s.update(urdu: v),
             ),
             ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: Text(tr(u, 'about')),
+              leading: const Icon(Icons.share_outlined),
+              title: Text(tr(u, 'share')),
               onTap: () {
                 _key.currentState?.closeDrawer();
-                showAboutDialog(
-                  context: context,
-                  applicationName: tr(u, 'title'),
-                  applicationVersion: '1.0.0',
-                  children: [Text(tr(u, 'disclaimer'))],
-                );
+                shareApp(u);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.star_outline),
+              title: Text(tr(u, 'rate')),
+              onTap: () {
+                _key.currentState?.closeDrawer();
+                rateApp();
               },
             ),
           ]),
@@ -200,18 +230,6 @@ class Panel extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
         ),
         child: child,
-      );
-}
-
-class Disclaimer extends StatelessWidget {
-  final bool urdu;
-  const Disclaimer(this.urdu, {super.key});
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: Text(tr(urdu, 'disclaimer'),
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor)),
       );
 }
 
@@ -316,7 +334,6 @@ class _CalcPageState extends State<CalcPage> {
                 ]),
               ),
       ),
-      Disclaimer(u),
     ]);
   }
 
@@ -399,7 +416,6 @@ class _ReversePageState extends State<ReversePage> {
                 ]),
               ),
       ),
-      Disclaimer(u),
     ]);
   }
 }
@@ -429,7 +445,6 @@ class SettingsPage extends StatelessWidget {
       const SizedBox(height: 8),
       SwitchListTile(title: Text(tr(u, 'dark')), value: state.dark, onChanged: (v) => state.update(dark: v)),
       SwitchListTile(title: Text(tr(u, 'lang')), value: state.urdu, onChanged: (v) => state.update(urdu: v)),
-      Disclaimer(u),
     ]);
   }
 }
