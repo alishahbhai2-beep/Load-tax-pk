@@ -47,18 +47,107 @@ class Shell extends StatefulWidget {
 
 class _ShellState extends State<Shell> {
   int _i = 0;
+  final _key = GlobalKey<ScaffoldState>();
+
+  void _go(int i) {
+    setState(() => _i = i);
+    _key.currentState?.closeDrawer();
+  }
+
+  Widget _tile(IconData icon, String label, int i) => ListTile(
+        leading: Icon(icon),
+        title: Text(label),
+        selected: _i == i,
+        onTap: () => _go(i),
+      );
 
   @override
   Widget build(BuildContext context) {
-    final u = widget.state.urdu;
+    final s = widget.state;
+    final u = s.urdu;
+    final cs = Theme.of(context).colorScheme;
     final pages = [
-      CalcPage(state: widget.state),
-      ReversePage(state: widget.state),
-      SettingsPage(state: widget.state),
+      CalcPage(state: s),
+      ReversePage(state: s),
+      SettingsPage(state: s),
     ];
     return Scaffold(
-      appBar: AppBar(title: Text(tr(u, 'title')), centerTitle: true),
-      body: SafeArea(child: IndexedStack(index: _i, children: pages)),
+      key: _key,
+      drawer: Drawer(
+        child: SafeArea(
+          child: ListView(children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Icon(Icons.calculate, size: 40, color: cs.primary),
+                const SizedBox(height: 8),
+                Text(tr(u, 'title'), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                Text(tr(u, 'headerSub')),
+              ]),
+            ),
+            const Divider(),
+            _tile(Icons.calculate_outlined, tr(u, 'tabCalc'), 0),
+            _tile(Icons.swap_vert, tr(u, 'reverseTitle'), 1),
+            _tile(Icons.settings_outlined, tr(u, 'tabSettings'), 2),
+            const Divider(),
+            SwitchListTile(
+              secondary: const Icon(Icons.dark_mode_outlined),
+              title: Text(tr(u, 'dark')),
+              value: s.dark,
+              onChanged: (v) => s.update(dark: v),
+            ),
+            SwitchListTile(
+              secondary: const Icon(Icons.translate),
+              title: Text(tr(u, 'lang')),
+              value: s.urdu,
+              onChanged: (v) => s.update(urdu: v),
+            ),
+            ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: Text(tr(u, 'about')),
+              onTap: () {
+                _key.currentState?.closeDrawer();
+                showAboutDialog(
+                  context: context,
+                  applicationName: tr(u, 'title'),
+                  applicationVersion: '1.0.0',
+                  children: [Text(tr(u, 'disclaimer'))],
+                );
+              },
+            ),
+          ]),
+        ),
+      ),
+      body: SafeArea(
+        child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Row(children: [
+              HeaderButton(icon: Icons.menu, onTap: () => _key.currentState?.openDrawer()),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(tr(u, 'title'),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, height: 1.15)),
+                  const SizedBox(height: 2),
+                  Text(tr(u, 'headerSub'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium),
+                ]),
+              ),
+              const SizedBox(width: 12),
+              HeaderButton(
+                icon: s.dark ? Icons.light_mode : Icons.dark_mode,
+                onTap: () => s.update(dark: !s.dark),
+              ),
+            ]),
+          ),
+          Expanded(child: IndexedStack(index: _i, children: pages)),
+        ]),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _i,
         onDestinationSelected: (v) => setState(() => _i = v),
@@ -67,6 +156,29 @@ class _ShellState extends State<Shell> {
           NavigationDestination(icon: const Icon(Icons.swap_vert), label: tr(u, 'tabReverse')),
           NavigationDestination(icon: const Icon(Icons.settings_outlined), label: tr(u, 'tabSettings')),
         ],
+      ),
+    );
+  }
+}
+
+class HeaderButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const HeaderButton({super.key, required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Material(
+      color: cs.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: cs.outlineVariant),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: SizedBox(width: 48, height: 48, child: Icon(icon, color: cs.onSurface)),
       ),
     );
   }
@@ -294,48 +406,29 @@ class _ReversePageState extends State<ReversePage> {
 
 // ---------- Settings ----------
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatelessWidget {
   final AppState state;
   const SettingsPage({super.key, required this.state});
-  @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
-  late final TextEditingController _w = TextEditingController(text: '${widget.state.wht}');
-
-  @override
-  void dispose() { _w.dispose(); super.dispose(); }
-
-  double? _rate(String s) {
-    final v = double.tryParse(s.trim());
-    return (v == null || v < 0 || v > 100) ? null : v;
-  }
 
   @override
   Widget build(BuildContext context) {
-    final s = widget.state;
-    final u = s.urdu;
-    InputDecoration dec(String k) => InputDecoration(
-        labelText: tr(u, k), border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)));
+    final u = state.urdu;
     return ListView(padding: const EdgeInsets.all(16), children: [
-      Text(tr(u, 'ratesNote'), style: Theme.of(context).textTheme.bodyMedium),
-      const SizedBox(height: 16),
-      TextField(
-        controller: _w,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: dec('wht'),
-        onChanged: (t) { final v = _rate(t); if (v != null) s.update(wht: v); },
+      Panel(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(tr(u, 'ratesNote'), style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 12),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Flexible(child: Text(tr(u, 'wht'), style: const TextStyle(fontWeight: FontWeight.w600))),
+            Text('${state.wht.toStringAsFixed(0)}%',
+                style: TextStyle(
+                    fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+          ]),
+        ]),
       ),
-      TextButton(
-        onPressed: () {
-          s.resetRates();
-          _w.text = '${s.wht}';
-        },
-        child: Text(tr(u, 'resetRates')),
-      ),
-      SwitchListTile(title: Text(tr(u, 'dark')), value: s.dark, onChanged: (v) => s.update(dark: v)),
-      SwitchListTile(title: Text(tr(u, 'lang')), value: s.urdu, onChanged: (v) => s.update(urdu: v)),
+      const SizedBox(height: 8),
+      SwitchListTile(title: Text(tr(u, 'dark')), value: state.dark, onChanged: (v) => state.update(dark: v)),
+      SwitchListTile(title: Text(tr(u, 'lang')), value: state.urdu, onChanged: (v) => state.update(urdu: v)),
       Disclaimer(u),
     ]);
   }
