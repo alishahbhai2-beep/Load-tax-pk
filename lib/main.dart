@@ -365,7 +365,7 @@ class _ReversePageState extends State<ReversePage> {
   Widget build(BuildContext context) {
     final u = widget.state.urdu;
     return ListView(padding: const EdgeInsets.all(16), children: [
-      Text(tr(u, 'reverseTitle'), style: Theme.of(context).textTheme.titleLarge),
+      Text(tr(u, 'reverseHeading'), style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 16),
       TextField(
         controller: _c,
